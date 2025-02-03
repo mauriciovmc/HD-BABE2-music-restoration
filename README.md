@@ -1,3 +1,41 @@
+# Organização do repositório
+
+Esse textinho é uma descrição breve da organização do repositório original, pra que a gente saiba onde procurar os pedaços que precisarem ser modificados. Por simplicidade, estou escrevendo em português mesmo. Mantive o README original embaixo do texto, caso seja necessário consultá-lo.
+
+### Pasta `conf`
+
+Essa pasta contém os arquivos de configuração que o modelo lê na hora de rodar treinamento e inferência. O Hydra lê um `.yaml` de configuração "pai", que aponta para diferentes `.yaml` com as configurações de partes diferentes do código.
+
+Por exemplo, o arquivo `conf_piano.yaml` possui um dicionário de `defaults`. Nesse dicionário, a chave `dset` está associada ao valor `maestro_allyears`, o que significa que as configurações de leitura e tratamento do dataset se encontrarão no arquivo `conf/dset/maestro_allyears.yaml`.
+
+As configurações relacionadas ao processo de difusão (sequência de ruídos, procedimento de resolução da EDO / SDE, etc) estão na sub-pasta `diff_params`. A sub-pasta `dset` tem as informações relacionadas ao dataset sendo usado. A sub-pasta `exp` parece controlar os parâmetros de treino, e a pasta `logging` o log do treinamento (incluindo quando salvar checkpoints). Em `network` estão as configurações da rede. Por fim, `tester` parece controlar os parâmetros dos experimentos que ele fez.
+
+### Pasta `datasets`
+
+Apesar do nome, essa pasta contém as classes do pytorch responsáveis por carregar e tratar os diferentes conjuntos de dados que ele usou no artigo. Durante o treinamento ele provavelmente importa esses módulos.
+
+Vale a pena passar os olhos rapidamente na documentação do PyTorch pra datasets e dataloaders em caso de dúvidas.
+
+### Pasta `diff_params`
+
+No módulo que está nessa pasta estão as funções relacionadas aos processos forward e backward de difusão. Isso inclui o resolvedor da EDO, a função que cria a sequência de ruídos, etc.
+
+### Pasta `network`
+
+Aqui está a rede. O arquivo com a CQTDiff+ é o `cqtdiff.py`. Criei uma cópia dele como ponto de partida pra arquitetura nova.
+
+### Pasta `testing`
+
+Essa pasta tem dois scripts que ele parece ter usado pra inferência. As funções parecem servir pra automatizar o processo de avaliação. Preciso investigar mais pra poder entrar em detalhes. 
+
+### Pasta `training`
+
+O módulo dessa pasta contém o loop de treinamento do modelo. Acho que não vai ser preciso fazer grandes mudanças por aqui.
+
+### Pasta `utils`
+
+Aqui estão todas as funções que ele precisou chamar nos outros módulos e que não entravam necessariamente nas divisões acima. Isso inclui a implementação dele da CQT. 
+
 # A Diffusion-Based Generative Equalizer for Music Restoration
 
 
