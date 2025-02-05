@@ -1,4 +1,5 @@
 defaults:
+  - _self_
   - dset: maestro_allyears
   - network: cqtdiff+
   - diff_params: edm

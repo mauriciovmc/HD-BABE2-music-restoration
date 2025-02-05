@@ -10,3 +10,4 @@ soundfile
 librosa
 wandb
 tqdm
+einops

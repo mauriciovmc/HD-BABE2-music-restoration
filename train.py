@@ -52,8 +52,9 @@ def _main(args):
     # Train.
     trainer.training_loop()
 
-@hydra.main(config_path="conf", config_name="conf_piano")
+@hydra.main(config_path="conf", config_name="conf_piano", version_base=None)
 def main(args):
+    os.chdir(hydra.utils.get_original_cwd())  # Ensure working directory is correct
     _main(args)
 
 if __name__ == "__main__":

@@ -1,43 +1,4 @@
-# Organização do repositório
-
-Esse textinho é uma descrição breve da organização do repositório original, pra que a gente saiba onde procurar os pedaços que precisarem ser modificados. Por simplicidade, estou escrevendo em português mesmo. Mantive o README original embaixo do texto, caso seja necessário consultá-lo.
-
-### Pasta `conf`
-
-Essa pasta contém os arquivos de configuração que o modelo lê na hora de rodar treinamento e inferência. O Hydra lê um `.yaml` de configuração "pai", que aponta para diferentes `.yaml` com as configurações de partes diferentes do código.
-
-Por exemplo, o arquivo `conf_piano.yaml` possui um dicionário de `defaults`. Nesse dicionário, a chave `dset` está associada ao valor `maestro_allyears`, o que significa que as configurações de leitura e tratamento do dataset se encontrarão no arquivo `conf/dset/maestro_allyears.yaml`.
-
-As configurações relacionadas ao processo de difusão (sequência de ruídos, procedimento de resolução da EDO / SDE, etc) estão na sub-pasta `diff_params`. A sub-pasta `dset` tem as informações relacionadas ao dataset sendo usado. A sub-pasta `exp` parece controlar os parâmetros de treino, e a pasta `logging` o log do treinamento (incluindo quando salvar checkpoints). Em `network` estão as configurações da rede. Por fim, `tester` parece controlar os parâmetros dos experimentos que ele fez.
-
-### Pasta `datasets`
-
-Apesar do nome, essa pasta contém as classes do pytorch responsáveis por carregar e tratar os diferentes conjuntos de dados que ele usou no artigo. Durante o treinamento ele provavelmente importa esses módulos.
-
-Vale a pena passar os olhos rapidamente na documentação do PyTorch pra datasets e dataloaders em caso de dúvidas.
-
-### Pasta `diff_params`
-
-No módulo que está nessa pasta estão as funções relacionadas aos processos forward e backward de difusão. Isso inclui o resolvedor da EDO, a função que cria a sequência de ruídos, etc.
-
-### Pasta `network`
-
-Aqui está a rede. O arquivo com a CQTDiff+ é o `cqtdiff.py`. Criei uma cópia dele como ponto de partida pra arquitetura nova.
-
-### Pasta `testing`
-
-Essa pasta tem dois scripts que ele parece ter usado pra inferência. As funções parecem servir pra automatizar o processo de avaliação. Preciso investigar mais pra poder entrar em detalhes. 
-
-### Pasta `training`
-
-O módulo dessa pasta contém o loop de treinamento do modelo. Acho que não vai ser preciso fazer grandes mudanças por aqui.
-
-### Pasta `utils`
-
-Aqui estão todas as funções que ele precisou chamar nos outros módulos e que não entravam necessariamente nas divisões acima. Isso inclui a implementação dele da CQT. 
-
 # A Diffusion-Based Generative Equalizer for Music Restoration
-
 
 This repository houses the official implementation of BABE-2, an advanced algorithm designed for the enhancement of historical music recordings. 
 
@@ -93,3 +54,42 @@ python train.py  --config-name=conf_custom.yaml  model_dir="experiments/finetune
 
 
 
+# NOTES
+
+# Repository organization
+
+This little text is a brief description of the organization of the original repository, so that we know where to look for the bits that need to be modified. I've kept the original README below the text, in case you need to consult it.
+
+### `conf` folder
+
+This folder contains the configuration files that the model reads when running training and inference. Hydra reads a “parent” `.yaml` configuration file, which points to different `.yaml` files with the configurations for different parts of the code.
+
+For example, the file `conf_piano.yaml` has a `defaults` dictionary. In this dictionary, the `dset` key is associated with the `maestro_allyears` value, which means that the dataset reading and processing settings will be found in the `conf/dset/maestro_allyears.yaml` file.
+
+The settings related to the diffusion process (noise sequence, ODE / SDE resolution procedure, etc.) are in the `diff_params` sub-folder. The `dset` sub-folder contains information related to the dataset being used. The `exp` sub-folder seems to control the training parameters, and the `logging` folder the training log (including when to save checkpoints). In `network` are the network settings. Finally, `tester` seems to control the parameters of the experiments it has done.
+
+### `datasets` folder
+
+Despite its name, this folder contains the pytorch classes responsible for loading and processing the different datasets he used in the article. During training he will probably import these modules.
+
+It's worth taking a quick look at the PyTorch documentation for datasets and dataloaders if you have any doubts.
+
+### Folder `diff_params`
+
+The module in this folder contains the functions related to the forward and backward diffing processes. This includes the ODE solver, the function that creates the noise sequence, etc.
+
+### `network` folder
+
+Here is the network. The file with CQTDiff+ is `cqtdiff.py`. I created a copy of it as a starting point for the new architecture.
+
+### `testing` folder
+
+This folder has two scripts that he seems to have used for inference. The functions seem to be used to automate the evaluation process. I need to investigate further to be able to go into more detail. 
+
+### `training` folder
+
+The module in this folder contains the model's training loop. I don't think I need to make any major changes here.
+
+### `utils` folder
+
+Here are all the functions he needed to call in the other modules that didn't necessarily go into the divisions above. This includes his implementation of CQT. 
