@@ -3,8 +3,8 @@ exp_name: "22k_8s"
 trainer_callable: "training.trainer.Trainer"
 
 wandb:
-  entity: "eloimoliner"
-  project: "A-diffusion"
+  entity: "madovalemade-university-of-osnabr-ck"
+  project: "HD-BABE2"
 
 model_dir: None
 #main options
