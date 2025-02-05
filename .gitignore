@@ -6,3 +6,4 @@ ipython_config.py
 venv/
 cython_debug/
 wandb/
+train.sh/
