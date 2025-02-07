@@ -8,3 +8,4 @@ cython_debug/
 wandb/
 outputs/
 experiments/maestro/
+train.sh/
