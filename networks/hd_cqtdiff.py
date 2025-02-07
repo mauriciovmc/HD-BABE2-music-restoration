@@ -643,7 +643,7 @@ class UpDownResample(nn.Module):
         self.up = up
         if up or down:
             # upsample block
-            self.pad_mode = pad_mode  # I think reflect is a goof choice for padding
+            self.pad_mode = pad_mode  # I think reflect is a good choice for padding
             self.mode_resample = mode_resample
             if mode_resample == "T":
                 kernel_1d = torch.tensor(_kernels[resample_filter], dtype=torch.float32)
@@ -705,9 +705,6 @@ class HD_CQT_Diff(nn.Module):
 
     def __init__(self, args, device):
         """
-        __init__ é a função responsável por inicializar as camadas e outros parâmetros do modelo quando ele é instanciado
-        O padrão em torch, no geral, é ter uma função __init__ que declara sua rede, e uma função forward que faz as operações
-
         Args:
             args (dictionary): hydra dictionary
             device: torch device ("cuda" or "cpu")
@@ -721,7 +718,7 @@ class HD_CQT_Diff(nn.Module):
         self.embedding = RFF_MLP_Block(emb_dim=args.network.emb_dim, init=init)
         self.use_norm = args.network.use_norm
 
-        self.device = device # GPU onde o código vai rodar
+        self.device = device
 
         # parâmetros da CQT, inicializada em seguida 
         self.fbins = int(self.args.network.cqt.bins_per_oct * self.args.network.cqt.num_octs)
@@ -743,14 +740,13 @@ class HD_CQT_Diff(nn.Module):
             device=self.device,
         )
 
-        # Aqui provavelmente vai ser necessário colocar um nn.Module com a representação combinada.
-        # O ideal é que seja algo que receba o sinal no tempo e já calcule as CQTs e combine elas.
-        # Não precisa ser um bloco diferenciável, tem como fazer ele ser "congelado", salvo engano meu.
-        # Por enquanto criei o cabeçalho do módulo aqui em cima
+        # Here it will probably be necessary to add a nn.Module with the combined representation.
+        # Ideally, it should be something that receives the signal in time and already calculates the CQTs and combines them.
+        # It doesn't have to be a differentiable block (.requires_grad=False).
+        # For now, I've created the module header above
 
         self.f_dim = (self.fbins)  # assuming we have thrown away the DC component and the Nyquist frequency
 
-        # embeddings identificando as frequências
         self.use_fencoding = self.args.network.use_fencoding
         if self.use_fencoding:
             N_freq_encoding = 32
@@ -764,9 +760,7 @@ class HD_CQT_Diff(nn.Module):
         else:
             Nin = 2
 
-        # Aqui começa a declaração dos blocos da rede
-        # Ns são os números de canais nas features (Oct 1., Oct 2., ...)
-        # Ss são os fatores de decimação / interpolação entre os níveis da U-Net
+        # Here begins the declaration of the network blocks
         self.Ns = self.args.network.Ns
         self.Ss = self.args.network.Ss
 
@@ -774,12 +768,12 @@ class HD_CQT_Diff(nn.Module):
        
         self.attention_dict = self.args.network.attention_dict
         
-        # declaração do bloco decimador e interpolador
+        # Decimator and interpolator block declaration
         self.downsamplerT = UpDownResample(down=True, mode_resample="T")
         self.upsamplerT = UpDownResample(up=True, mode_resample="T")
 
-        # essas listas representam a parte direita, meio, e parte esquerda da U-Net
-        # ele concatena os blocos de cada nível nessas três listas
+        # These lists represent the left, middle and right parts of the U-Net
+        # the blocks of each level are concatenated into these three lists
         self.downs = nn.ModuleList([])
         self.middle = nn.ModuleList([])
         self.ups = nn.ModuleList([])
@@ -801,7 +795,7 @@ class HD_CQT_Diff(nn.Module):
             else:
                 attn_dict = None
 
-            # lado esquerdo da rede
+            # U-NET: left side
             self.downs.append(
                 nn.ModuleList(
                     [
@@ -827,13 +821,13 @@ class HD_CQT_Diff(nn.Module):
                             emb_dim=self.emb_dim,
                             init=init,
                             init_zero=init_zero,
-                            Fdim=(i + 1) * self.bins_per_oct, # aqui vamos ter que mudar, provavelmente
+                            Fdim=(i + 1) * self.bins_per_oct, # WE'LL PROBABLY HAVE TO CHANGE THIS
                         ),
                     ]
                 )
             )
 
-        # meio 
+        # U-Net: middle part
         if self.args.network.bottleneck_type == "res_dil_convs":
             for i in range(self.args.network.num_bottleneck_layers):
                 if self.attention_layers[-1]:
@@ -874,7 +868,7 @@ class HD_CQT_Diff(nn.Module):
         else:
             raise NotImplementedError("bottleneck type not implemented")
 
-        # lado direito da rede
+        # U-NET: right side
         for i in range(self.num_octs - 1, -1, -1):
 
             if i == 0:
@@ -895,7 +889,7 @@ class HD_CQT_Diff(nn.Module):
             self.ups.append(
                 nn.ModuleList(
                     [
-                        ResnetBlock( # Out. Block (acho)
+                        ResnetBlock( # Out. Block (I think)
                             dim_out,
                             2,
                             use_norm=self.use_norm,
@@ -907,7 +901,7 @@ class HD_CQT_Diff(nn.Module):
                             init=init,
                             init_zero=init_zero,
                         ),
-                        ResnetBlock( # Res. Block (acho)
+                        ResnetBlock( # Res. Block (I think)
                             dim_in,
                             dim_out,
                             use_norm=self.use_norm,

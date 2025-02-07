@@ -29,8 +29,7 @@ lossmlp:
 finetuning: False
 
 
-
-#save_model: True #wether to save the checkpoints of the model in this experiment
+save_model: True #wether to save the checkpoints of the model in this experiment
 
  
 # Training related.

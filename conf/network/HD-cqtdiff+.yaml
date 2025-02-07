@@ -1,0 +1,49 @@
+#network from the paper: Solving audio inverse problems with a diffusion model
+name: "cqtdiff+"
+callable: "networks.cqtdiff.Unet_CQT_oct_with_attention"
+
+
+use_fencoding: False
+use_norm: True
+
+filter_out_cqt_DC_Nyq: False # < < < < < < ALTERED
+
+depth: 5 # original:7 total depth of the network (including the first stage) # < < < < < < ALTERED
+
+emb_dim: 256 #dimensionality of the RFF embeddings
+
+#dimensions of the first stage (the length of this vector should be equal to num_octs)
+Ns: [64, 96, 128, 256, 256] # < < < < < < < PROPOSAL
+# Ns: [64, 96 ,96, 128, 128,256, 256] #ORIGINAL it is hardcoded
+#Ns: [8, 8 ,8, 8, 16,16, 16] #it is hardcoded
+
+attention_layers: [0, 0, 0, 0, 0, 0] # < < < < < < < PROPOSAL
+#attention_layers: [0, 0, 0, 0, 1, 1, 1, 1] #num_octs+bottleneck
+# attention_layers: [0, 0, 0, 0, 0, 0, 0, 0] #ORIGINAL num_octs+bottleneck
+#attention_Ns: [0, 0, 0, 0,256 ,512,1024 ,1024]
+
+Ss: [2, 2, 2, 2, 2] #downsample factors at the first stage, now it is ignored
+# Ss: [2,2,2, 2, 2, 2, 2] #downsample factors at the first stage, now it is ignored
+
+num_dils: [2,3,4,5,6]
+# num_dils: [2,3,4,5,6,7,7] # original
+
+cqt:
+    window: "kaiser"
+    beta: 1
+    num_octs: 7
+    bins_per_oct: 64 #this needs to be lower than 64, otherwise the time attention is inpractical
+
+bottleneck_type: "res_dil_convs"
+
+num_bottleneck_layers: 1
+
+attention_dict:
+    num_heads: 8
+    attn_dropout: 0.0
+    bias_qkv: False
+    N: 0
+    rel_pos_num_buckets: 32
+    rel_pos_max_distance: 64
+    use_rel_pos: True
+    Nproj: 8

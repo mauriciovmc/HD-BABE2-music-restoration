@@ -6,3 +6,5 @@ ipython_config.py
 venv/
 cython_debug/
 wandb/
+outputs/
+experiments/maestro/

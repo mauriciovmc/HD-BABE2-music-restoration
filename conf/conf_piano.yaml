@@ -1,7 +1,7 @@
 defaults:
   - _self_
   - dset: maestro_allyears
-  - network: cqtdiff+
+  - network: HD-cqtdiff+ # < < < < < ALTERED
   - diff_params: edm
   - tester: only_uncond_maestro
   - exp: maestro22k_8s
